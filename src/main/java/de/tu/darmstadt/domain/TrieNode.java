@@ -1,29 +1,16 @@
 package de.tu.darmstadt.domain;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class TrieNode {
 
-    private int curr;
-    TrieNode[] children;
-    private boolean isLeaf;
+    Map<Integer, TrieNode> children;
+    boolean isLeaf;
 
-    public TrieNode(int curr, boolean isLeaf) {
-        this.curr = curr;
-        this.isLeaf = isLeaf;
+    public TrieNode(){
+        children = new HashMap<Integer, TrieNode>();
+        isLeaf = false;
     }
 
-    public int getCurr() {
-        return curr;
-    }
-
-    public void setCurr(int curr) {
-        this.curr = curr;
-    }
-
-    public boolean isLeaf() {
-        return isLeaf;
-    }
-
-    public void setLeaf(boolean leaf) {
-        isLeaf = leaf;
-    }
 }

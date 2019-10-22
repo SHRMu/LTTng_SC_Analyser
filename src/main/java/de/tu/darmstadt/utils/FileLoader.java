@@ -5,6 +5,7 @@ import org.junit.Test;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -19,9 +20,9 @@ public class FileLoader {
     private static int sched_switch_ID;
     private static int kmem_free_ID;
 
-    private static String LAYER_0 = "out.txt";
+    private static String LAYER_0 = "out.txt"; //
     private static String LAYER_1 = "layer1.txt";
-    private static String LAYER_2 = "layer2.txt";
+
 
     /**
      * 将lttng list -k 保存的文件转化为Map<String, Integer>
@@ -82,15 +83,23 @@ public class FileLoader {
                 while ((line=br.readLine())!=null){
                     String[] split = line.split(": ")[0].split(" ");
                     String comm = split[split.length-1];
-                    try{
+                    if (commMap.keySet().contains(comm)){
                         commID = commMap.get(comm);
                         sb.append(commID+" ");
-                    }catch (NullPointerException e){
-                        //对于lttng-k缺失的命令进行弥补
-                        commMap.put(comm, commMap.size()+1);
-                        System.out.println(comm+" with added commID ::: "+commMap.size());
-                        commID = commMap.get(comm);
-                        sb.append(commID+" ");
+                    }else {
+                        if (flag){
+                            //对于clean中新出现的，添加入commMap
+                            commMap.put(comm, commMap.size()+1);
+//                            System.out.println(comm+" with added commID ::: "+commMap.size());
+                            commID = commMap.get(comm);
+                            sb.append(commID+" ");
+                        }else {
+                            //对于只在dirty中出现的comm标识为-1
+                            commMap.put(comm, -1);
+                            System.out.println(comm+" with negative commID !!! " );
+                            commID = commMap.get(comm);
+                            sb.append(commID+" ");
+                        }
                     }
                 }
                 sb.append("\n");
@@ -108,8 +117,29 @@ public class FileLoader {
         }
     }
 
+    private static void commMapStored(){
+        String filePath = "D:\\Github\\LTTng_SC_Analyser\\src\\main\\resources\\commMap.txt";
+        File file = new File(filePath);
+        if (file.exists())
+            file.delete();
+        BufferedWriter bw;
+        try{
+            bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, true)));
+            Set<Map.Entry<String, Integer>> entries = commMap.entrySet();
+            for (Map.Entry entry:
+                    entries) {
+                bw.write(entry.getKey()+" "+ entry.getValue());
+                bw.write("\n");
+            }
+            bw.close();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+
+    }
+
     /**
-     * 将clean和dirty文件夹中的数据合并编码保存为Layer0层
+     * 将clean和dirty文件夹.中的数据合并编码保存为Layer0层
      */
     private static void dataEncoder(String folderPath){
         File folder = new File(folderPath);
@@ -124,8 +154,11 @@ public class FileLoader {
             String name = file.getName();
             if (name.equalsIgnoreCase("clean")) {
                 dataMapping(file.getAbsolutePath(),true);
+                commMapStored();
             }
-            if (name.equalsIgnoreCase("dirty")) dirtyPath = file.getAbsolutePath();
+            if (name.equalsIgnoreCase("dirty")) {
+                dataMapping(file.getAbsolutePath(), false);
+            }
         }
         if (cleanPath.equals("")||dirtyPath.equals(""))
             return;
@@ -145,12 +178,12 @@ public class FileLoader {
             return;
         }
         String outPath = file.getAbsolutePath().replaceAll(LAYER_0,LAYER_1);
-        File outFile = new File(outPath);
-        if (outFile.exists())
-            outFile.delete();
+        File out = new File(outPath);
+        if (out.exists())
+            out.delete();
         System.out.println(outPath);
-        BufferedReader br = null;
-        BufferedWriter bw = null;
+        BufferedReader br ;
+        BufferedWriter bw ;
         try{
             br = new BufferedReader(new FileReader(file));
             bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outPath,true)));
@@ -174,6 +207,8 @@ public class FileLoader {
                 }
                 bw.write(sb.toString());
             }
+            br.close();
+            bw.close();
         }catch (IOException e) {
             e.printStackTrace();
         }
@@ -187,5 +222,7 @@ public class FileLoader {
         sched_switch_ID = commMap.get("sched_switch");
         kmem_free_ID = commMap.get("kmem_kfree");
         dataSplitter("D:\\Vulnerability\\CVE-2017-7494\\clean\\out.txt");
+        dataSplitter("D:\\Vulnerability\\CVE-2017-7494\\dirty\\out.txt");
+
     }
 }
