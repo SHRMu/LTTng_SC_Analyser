@@ -8,7 +8,6 @@ import java.io.*;
 
 public class DataComparator {
 
-
     private static TrieTree buildTree(String filePath){
         TrieTree trieTree = new TrieTree();
         File file = new File(filePath);

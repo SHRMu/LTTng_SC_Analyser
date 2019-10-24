@@ -10,12 +10,11 @@ import java.util.Set;
 /**
  *
  */
-public class FileLoader {
+public class FileUtils {
 
-    //
+    public static final Map commMap = new HashMap();
+
     public static final String CVE_RECORD_FOLDER = "D:\\Vulnerability\\CVE-2017-7494";
-
-    private static Map<String, Integer> commMap;
 
     private static int sched_switch_ID;
     private static int kmem_free_ID;
@@ -23,37 +22,12 @@ public class FileLoader {
     private static String LAYER_0 = "out.txt"; //
     private static String LAYER_1 = "layer1.txt";
 
-
-    /**
-     * 将lttng list -k 保存的文件转化为Map<String, Integer>
-     * txt文件保存的命令不全，需要后续追加
-     */
-    private void createMapper(String lttngFile){
-
-        //读取resource文件夹下的lttng-k.txt
-        String file = this.getClass().getClassLoader().getResource(lttngFile).getFile();
-        int count = 1;
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(file));
-            String line;
-            while ((line = br.readLine())!=null){
-                String comm = line.split(" ")[0]; //get command name
-                if (!commMap.keySet().contains(comm)){
-                    commMap.put(comm,count);
-                    count++;
-                }
-            }
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-    }
-
     /**
      * 将clean，dirty文件夹下的文件根据cmmMap转化为数字文件
      * @param folderPath
      * @param flag
      */
-    private static void dataMapping(String folderPath, boolean flag) {
+    private static void dataMapping(Map<String,Integer> commMap, String folderPath, boolean flag) {
 
         File dataFolder = new File(folderPath);
         //如果输入的不是clean或者dirty文件夹地址，直接返回
@@ -117,27 +91,6 @@ public class FileLoader {
         }
     }
 
-    private static void commMapStored(){
-        String filePath = "D:\\Github\\LTTng_SC_Analyser\\src\\main\\resources\\commMap.txt";
-        File file = new File(filePath);
-        if (file.exists())
-            file.delete();
-        BufferedWriter bw;
-        try{
-            bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, true)));
-            Set<Map.Entry<String, Integer>> entries = commMap.entrySet();
-            for (Map.Entry entry:
-                    entries) {
-                bw.write(entry.getKey()+" "+ entry.getValue());
-                bw.write("\n");
-            }
-            bw.close();
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-
-    }
-
     /**
      * 将clean和dirty文件夹.中的数据合并编码保存为Layer0层
      */
@@ -153,11 +106,10 @@ public class FileLoader {
              files) {
             String name = file.getName();
             if (name.equalsIgnoreCase("clean")) {
-                dataMapping(file.getAbsolutePath(),true);
-                commMapStored();
+                dataMapping(commMap, file.getAbsolutePath(),true);
             }
             if (name.equalsIgnoreCase("dirty")) {
-                dataMapping(file.getAbsolutePath(), false);
+                dataMapping(commMap, file.getAbsolutePath(), false);
             }
         }
         if (cleanPath.equals("")||dirtyPath.equals(""))
@@ -216,13 +168,13 @@ public class FileLoader {
 
     @Test
     public void test(){
-        commMap = new HashMap<String, Integer>();
-//        createMapper("lttng-k.txt");  //利用ltttng-k的sc创建原始commMap
-        dataEncoder(CVE_RECORD_FOLDER);
-        sched_switch_ID = commMap.get("sched_switch");
-        kmem_free_ID = commMap.get("kmem_kfree");
-        dataSplitter("D:\\Vulnerability\\CVE-2017-7494\\clean\\out.txt");
-        dataSplitter("D:\\Vulnerability\\CVE-2017-7494\\dirty\\out.txt");
+//        commMap = new HashMap<String, Integer>();
+////        createMapper("lttng-k.txt");  //利用ltttng-k的sc创建原始commMap
+//        dataEncoder(CVE_RECORD_FOLDER);
+//        sched_switch_ID = commMap.get("sched_switch");
+//        kmem_free_ID = commMap.get("kmem_kfree");
+//        dataSplitter("D:\\Vulnerability\\CVE-2017-7494\\clean\\out.txt");
+//        dataSplitter("D:\\Vulnerability\\CVE-2017-7494\\dirty\\out.txt");
 
     }
 }
