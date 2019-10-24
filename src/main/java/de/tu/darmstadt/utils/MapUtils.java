@@ -61,12 +61,25 @@ public class MapUtils {
         }
     }
 
-    public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
+    public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map, boolean reverse){
         List<Entry<K,V>> list = new ArrayList<>(map.entrySet());
         list.sort(Entry.comparingByValue());
+        if (reverse)
+            Collections.reverse(list);
         Map<K,V> result = new LinkedHashMap<>();
         list.forEach(item -> result.put(item.getKey(), item.getValue()));
         return result;
+    }
+
+    /**
+     * 升序排序
+     * @param map
+     * @param <K>
+     * @param <V>
+     * @return
+     */
+    public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
+        return sortByValue(map,false);
     }
 
     @Test

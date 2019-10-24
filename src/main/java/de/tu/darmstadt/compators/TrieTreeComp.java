@@ -1,12 +1,10 @@
-package de.tu.darmstadt.utils;
+package de.tu.darmstadt.compators;
 
-import de.tu.darmstadt.domain.TrieNode;
 import de.tu.darmstadt.domain.TrieTree;
-import org.junit.Test;
 
 import java.io.*;
 
-public class DataComparator {
+public class TrieTreeComp {
 
     private static TrieTree buildTree(String filePath){
         TrieTree trieTree = new TrieTree();
@@ -15,11 +13,11 @@ public class DataComparator {
             return null;
         BufferedReader br;
         try{
-           br  = new BufferedReader(new FileReader(file));
-           String line;
-           while ((line = br.readLine())!=null){
-               trieTree.insert(line);
-           }
+            br  = new BufferedReader(new FileReader(file));
+            String line;
+            while ((line = br.readLine())!=null){
+                trieTree.insert(line);
+            }
         }catch (IOException e){
             e.printStackTrace();
         }
@@ -51,16 +49,5 @@ public class DataComparator {
         }catch (IOException e){
             e.printStackTrace();
         }
-    }
-
-
-    @Test
-    public void test(){
-        String cleanPath = "D:\\Vulnerability\\CVE-2017-7494\\clean\\layer1.txt";
-        String dirtyPath = "D:\\Vulnerability\\CVE-2017-7494\\dirty\\layer1.txt";
-        String outPath = "D:\\Vulnerability\\CVE-2017-7494\\dirty\\differ.txt";
-        TrieTree trieTree = buildTree(cleanPath);
-        searchTree(trieTree, dirtyPath,outPath);
-
     }
 }
