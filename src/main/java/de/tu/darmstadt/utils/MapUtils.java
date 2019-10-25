@@ -2,6 +2,7 @@ package de.tu.darmstadt.utils;
 
 import org.junit.Test;
 
+import javax.imageio.IIOException;
 import java.io.*;
 import java.util.*;
 import java.util.Map.Entry;
@@ -39,11 +40,6 @@ public class MapUtils {
         return commMap;
     }
 
-    /**
-     *
-     * @param commMap
-     * @param folderPath
-     */
     public static void saveMapper(Map<String, Integer> commMap, String folderPath){
         File file = new File(folderPath);
         if (!file.exists()||!file.isDirectory())
@@ -61,6 +57,25 @@ public class MapUtils {
         }
     }
 
+    public static Map<Integer,String> loadMapper(String filePath){
+        if (!FileUtils.checkIsFile(filePath)) {
+            return null;
+        }
+        Map<Integer, String> commMap = new HashMap<>();
+        BufferedReader  br;
+        try{
+            br = new BufferedReader(new FileReader(new File(filePath)));
+            String line;
+            while ((line=br.readLine())!=null){
+                String[] comm = line.split(" ");
+                commMap.put(Integer.valueOf(comm[1]),comm[0]);
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        return commMap;
+    }
+
     public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map, boolean reverse){
         List<Entry<K,V>> list = new ArrayList<>(map.entrySet());
         list.sort(Entry.comparingByValue());
@@ -71,13 +86,6 @@ public class MapUtils {
         return result;
     }
 
-    /**
-     * 升序排序
-     * @param map
-     * @param <K>
-     * @param <V>
-     * @return
-     */
     public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
         return sortByValue(map,false);
     }
