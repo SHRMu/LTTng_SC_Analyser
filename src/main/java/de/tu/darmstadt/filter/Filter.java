@@ -1,4 +1,4 @@
-package de.tu.darmstadt.filters;
+package de.tu.darmstadt.filter;
 
 import de.tu.darmstadt.utils.FileUtils;
 import de.tu.darmstadt.utils.MapUtils;
@@ -8,15 +8,11 @@ import java.util.*;
 
 public class Filter {
 
-    private static final String DIFFER_FILE_NAME = "differ";
-    private static final String RESULT_FILE_NAME = "result";
-
-    public static List<String> filterByCount(String differPath, int count){
+    public static List<String> filterByCount(String differPath, int max, int min){
         if (!FileUtils.checkIsFile(differPath)) {
             return null;
         }
-
-        String outPath = differPath.replaceAll(DIFFER_FILE_NAME,RESULT_FILE_NAME);
+        String outPath = differPath.replaceAll(FileUtils.DIFFER_FILE_NAME, FileUtils.DECODE_FILE_NAME);
 
         BufferedReader br;
         Map<String,Integer> countMap = new HashMap<>();
@@ -39,13 +35,13 @@ public class Filter {
 
         countMap = MapUtils.sortByValue(countMap, true);
 
-        System.out.println(countMap.get("120 12 46 119 7 6 40 8 "));
         Set<String> strings = countMap.keySet();
         for (String s:
              strings) {
-            if (countMap.get(s)<count)
+            if (countMap.get(s)<min)
                 break;
-            result.add(s);
+            if (countMap.get(s)<max)
+                result.add(s);
         }
 
         return result;

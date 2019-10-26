@@ -6,10 +6,7 @@ import java.util.Map;
 
 public class EncoderUtils {
 
-    private static final String DATA_ENCODER = "encoder.txt";
-    private static final String DATA_DECODER = "result.txt";
-
-    public static String dataEncoder(Map<String,Integer> commMap, String folderPath) throws FileNotFoundException{
+    public static String dataEncoder(Map<String,Integer> commMap, String folderPath) {
 
         File folder = new File(folderPath);
         String name = folder.getName();
@@ -20,7 +17,7 @@ public class EncoderUtils {
         }
 
         //输出文件在clean或者dirty文件夹下直接产生
-        String outPath = folder.getAbsolutePath()+"\\"+ DATA_ENCODER;
+        String outPath = folder.getAbsolutePath()+"\\"+ FileUtils.ENCODE_FILE_NAME;
         FileUtils.cleanFile(outPath);
 
         BufferedReader br = null;
@@ -72,14 +69,12 @@ public class EncoderUtils {
         }catch (IOException e){
             e.printStackTrace();
         }
-
         return outPath; //返回写入文件的地址
     }
 
-    public static void dataDecoder(Map<Integer, String> commMap, List<String> scList, String folderPath){
+    public static String dataDecoder(Map<Integer, String> commMap, List<String> scList, String folderPath){
 
-        String outPath = folderPath +"\\" + DATA_DECODER;
-
+        String outPath = folderPath +"\\" + FileUtils.DECODE_FILE_NAME;
         try{
             BufferedWriter bw = new BufferedWriter(new FileWriter(new File(outPath)));
             for (String sc:
@@ -96,6 +91,8 @@ public class EncoderUtils {
         }catch (IOException e){
 
         }
+
+        return outPath;
 
     }
 }

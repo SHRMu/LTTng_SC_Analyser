@@ -10,8 +10,17 @@ import java.io.*;
  */
 public class FileUtils {
 
-    private static final String CLEAN_FOLDER_NAME = "clean";
-    private static final String DIRTY_FOLDER_NAME = "dirty";
+    public static final String CLEAN_FOLDER_NAME = "clean";
+    public static final String DIRTY_FOLDER_NAME = "dirty";
+
+
+    public static final String LTTNG_FILE_NAME = "lttng-k.txt";
+    public static final String LTTNG_MAP_NAME = "lttng-map.txt";
+
+    public static final String ENCODE_FILE_NAME = "encode.txt";
+    public static final String SPLITED_FILE_NAME = "split.txt";
+    public static final String DIFFER_FILE_NAME = "differ.txt";
+    public static final String DECODE_FILE_NAME = "decode.txt";
 
 
     public static String getCleanFolder(String folder){

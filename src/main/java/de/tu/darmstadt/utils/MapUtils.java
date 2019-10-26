@@ -9,9 +9,6 @@ import java.util.Map.Entry;
 
 public class MapUtils {
 
-    private static final String LTTNG_FILE_NAME = "lttng-k.txt";
-
-    private static final String LTTNG_MAP_NAME = "lttng-map.txt";
 
     /**
      *
@@ -21,7 +18,7 @@ public class MapUtils {
     public static Map<String, Integer> createMapper(String folderPath){
         Map<String, Integer> commMap = new HashMap<>();
         //读取resource文件夹下的lttng-k.txt
-        String lttngFile = folderPath + "\\" + LTTNG_FILE_NAME;
+        String lttngFile = folderPath + "\\" + FileUtils.LTTNG_FILE_NAME;
         int count = 1;
         try {
             BufferedReader br = new BufferedReader(new FileReader(new File(lttngFile)));
@@ -44,7 +41,7 @@ public class MapUtils {
         File file = new File(folderPath);
         if (!file.exists()||!file.isDirectory())
             return;
-        String out = folderPath +"\\"+ LTTNG_MAP_NAME;
+        String out = folderPath +"\\"+ FileUtils.LTTNG_MAP_NAME;
         StringBuilder sb = new StringBuilder();
         try {
             BufferedWriter bw = new BufferedWriter(new FileWriter(new File(out)));
@@ -57,7 +54,8 @@ public class MapUtils {
         }
     }
 
-    public static Map<Integer,String> loadMapper(String filePath){
+    public static Map<Integer,String> loadMapper(String folderPath){
+        String filePath = folderPath + "\\" + FileUtils.LTTNG_MAP_NAME;
         if (!FileUtils.checkIsFile(filePath)) {
             return null;
         }
@@ -88,13 +86,6 @@ public class MapUtils {
 
     public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
         return sortByValue(map,false);
-    }
-
-    @Test
-    public void test(){
-        String recordPath = "D:\\Vulnerability\\CVE-2017-7494";
-        Map<String, Integer> commMap = createMapper(recordPath);
-        saveMapper(commMap,recordPath);
     }
 
 }

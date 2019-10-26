@@ -1,4 +1,4 @@
-package de.tu.darmstadt.graphs;
+package de.tu.darmstadt.graph;
 
 import java.io.File;
 import java.io.FileOutputStream;

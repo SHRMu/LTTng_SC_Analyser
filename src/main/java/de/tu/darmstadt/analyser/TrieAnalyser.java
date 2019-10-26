@@ -1,4 +1,4 @@
-package de.tu.darmstadt.analysers;
+package de.tu.darmstadt.analyser;
 
 import de.tu.darmstadt.domain.TrieTree;
 import de.tu.darmstadt.utils.FileUtils;
@@ -6,9 +6,6 @@ import de.tu.darmstadt.utils.FileUtils;
 import java.io.*;
 
 public class TrieAnalyser {
-
-    private static final String SPLITED_FILE_NAME = "split";
-    private static final String DIFFER_FILE_NAME = "differ";
 
     //基于clean splitter的结果构建trie
     public static TrieTree buildTree(String cleanPath){
@@ -35,7 +32,7 @@ public class TrieAnalyser {
         if (!FileUtils.checkIsFile(dirtyPath)) {
             return "";
         }
-        String outPath = dirtyPath.replaceAll(SPLITED_FILE_NAME,DIFFER_FILE_NAME);
+        String outPath = dirtyPath.replaceAll(FileUtils.SPLITED_FILE_NAME,FileUtils.DIFFER_FILE_NAME);
         BufferedReader br;
         BufferedWriter bw;
         try{

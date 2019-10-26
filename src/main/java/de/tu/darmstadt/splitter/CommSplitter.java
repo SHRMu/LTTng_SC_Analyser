@@ -1,16 +1,12 @@
-package de.tu.darmstadt.utils;
+package de.tu.darmstadt.splitter;
 
-import com.sun.org.apache.regexp.internal.RE;
+import de.tu.darmstadt.utils.FileUtils;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class SplitterUtils {
-
-    private static final String ENCODER_FILE_NAME = "encoder";
-    private static final String SPLITED_FILE_NAME = "split";
+public class CommSplitter {
 
     //移除连续重复出现的命令
     private static String[] removeRepeat(String[] ids){
@@ -31,7 +27,7 @@ public class SplitterUtils {
         if (!FileUtils.checkIsFile(encodeFile))
             return "";
 
-        String outPath = encodeFile.replaceAll(ENCODER_FILE_NAME,SPLITED_FILE_NAME);
+        String outPath = encodeFile.replaceAll(FileUtils.ENCODE_FILE_NAME,FileUtils.SPLITED_FILE_NAME);
 
         BufferedReader br;
         BufferedWriter bw;
@@ -67,11 +63,5 @@ public class SplitterUtils {
     public static void splitByComms(String encodeFile, List<Integer> comms){
         splitByComms(encodeFile,comms,false);
     }
-
-    public static void splitByLines(){
-
-    }
-
-
 
 }
