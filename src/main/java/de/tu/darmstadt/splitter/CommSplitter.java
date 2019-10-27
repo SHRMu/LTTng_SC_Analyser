@@ -8,21 +8,7 @@ import java.util.List;
 
 public class CommSplitter {
 
-    //移除连续重复出现的命令
-    private static String[] removeRepeat(String[] ids){
-        List<String> result = new LinkedList<>();
-        String preid = ids[0];
-        result.add(preid);
-        for (int i = 1; i < ids.length; i++) {
-            if (!ids[i].equals(preid)){
-                result.add(ids[i]);
-                preid = ids[i];
-            }
-        }
-        return result.toArray(new String[result.size()]);
-    }
-
-    public static String splitByComms(String encodeFile, List<Integer> comms, boolean norepeat){
+    public static String splitByComms(String encodeFile, List<Integer> comms){
 
         if (!FileUtils.checkIsFile(encodeFile))
             return "";
@@ -39,9 +25,6 @@ public class CommSplitter {
             while ((line=br.readLine())!=null){
                 sb = new StringBuilder();
                 String[] ids = line.split(" ");
-                if (norepeat) {
-                    ids = removeRepeat(ids);
-                }
                 for (int i = 0; i < ids.length; i++) {
                     sb.append(ids[i]+" ");
                     if (comms.contains(Integer.valueOf(ids[i]))) {
@@ -58,10 +41,6 @@ public class CommSplitter {
         }
 
         return outPath;
-    }
-
-    public static void splitByComms(String encodeFile, List<Integer> comms){
-        splitByComms(encodeFile,comms,false);
     }
 
 }

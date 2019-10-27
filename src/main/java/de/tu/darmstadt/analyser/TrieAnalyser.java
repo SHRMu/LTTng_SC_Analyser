@@ -12,16 +12,15 @@ public class TrieAnalyser {
         if (!FileUtils.checkIsFile(cleanPath)) {
             return null;
         }
-
         TrieTree trieTree = new TrieTree();
         BufferedReader br;
+        String line;
         try{
             br  = new BufferedReader(new FileReader(cleanPath));
-            String line;
             while ((line = br.readLine())!=null){
                 trieTree.insert(line);
             }
-        }catch (IOException e){
+        }catch (Exception e){
             e.printStackTrace();
         }
         return trieTree;

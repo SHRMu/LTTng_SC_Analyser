@@ -1,38 +1,39 @@
-package de.tu.darmstadt.utils;
+package de.tu.darmstadt.coder;
+
+import de.tu.darmstadt.utils.FileUtils;
 
 import java.io.*;
-import java.util.List;
 import java.util.Map;
 
-public class EncoderUtils {
+public class DataEncoder {
 
-    public static String dataEncoder(Map<String,Integer> commMap, String folderPath) {
-
-        File folder = new File(folderPath);
-        String name = folder.getName();
+    public static String encoding(Map<String,Integer> commMap, String folderPath, int selectedCount, boolean removeRepeat){
 
         //如果输入的不是clean或者dirty文件夹，直接返回
         if (!FileUtils.checkIsFolder(folderPath)){
             return "";
         }
 
+        File folder = new File(folderPath);
+        String name = folder.getName();
+
         //输出文件在clean或者dirty文件夹下直接产生
-        String outPath = folder.getAbsolutePath()+"\\"+ FileUtils.ENCODE_FILE_NAME;
-        FileUtils.cleanFile(outPath);
+        String encodePath = folder.getAbsolutePath()+"\\"+ FileUtils.ENCODE_FILE_NAME;
 
         BufferedReader br = null;
         BufferedWriter bw = null;
 
         File[] files = folder.listFiles();
-        for (File f:
-                files) {
+
+        for (int i=0; i<selectedCount; i++){
             try {
-                br = new BufferedReader(new FileReader(f));
+                br = new BufferedReader(new FileReader(files[i]));
                 //追加写文件操作
-                bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outPath,true)));
+                bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(encodePath,true)));
                 String line ;
                 StringBuilder sb = new StringBuilder();
                 int commID;
+                int preCommID =0;
                 while ((line=br.readLine())!=null){
                     //提取lttng的sc名称
                     String[] split = line.split(": ")[0].split(" ");
@@ -50,10 +51,17 @@ public class EncoderUtils {
                         }
                     }
                     commID = commMap.get(comm);
-                    sb.append(commID+" ");
+                    if (removeRepeat){
+                        if (preCommID != commID){
+                            sb.append(commID+" ");
+                            preCommID = commID;
+                        }
+                    }else {
+                        sb.append(commID+" ");
+                    }
                 }
-                sb.append("\n");
-                bw.write(sb.toString());
+                bw.write(sb.toString()+"\n");
+                bw.flush();
             }catch (Exception e){
                 e.printStackTrace();
             }
@@ -69,30 +77,7 @@ public class EncoderUtils {
         }catch (IOException e){
             e.printStackTrace();
         }
-        return outPath; //返回写入文件的地址
+        return encodePath; //返回写入文件的地址
     }
 
-    public static String dataDecoder(Map<Integer, String> commMap, List<String> scList, String folderPath){
-
-        String outPath = folderPath +"\\" + FileUtils.DECODE_FILE_NAME;
-        try{
-            BufferedWriter bw = new BufferedWriter(new FileWriter(new File(outPath)));
-            for (String sc:
-                    scList) {
-                String[] s = sc.split(" ");
-                StringBuilder sb = new StringBuilder();
-                for (int i = 0; i < s.length; i++) {
-                    sb.append(commMap.get(Integer.valueOf(s[i]))+" ");
-                }
-                sb.append("\n");
-                bw.write(sb.toString());
-            }
-            bw.close();
-        }catch (IOException e){
-
-        }
-
-        return outPath;
-
-    }
 }
