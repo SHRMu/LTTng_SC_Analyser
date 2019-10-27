@@ -3,23 +3,23 @@ package de.tu.darmstadt.splitter;
 import de.tu.darmstadt.utils.FileUtils;
 
 import java.io.*;
-import java.util.LinkedList;
 import java.util.List;
 
 public class CommSplitter {
 
-    public static String splitByComms(String encodeFile, List<Integer> comms){
+    public static String splitByComms(String encodePath, List<Integer> comms){
 
-        if (!FileUtils.checkIsFile(encodeFile))
+        if (!FileUtils.checkFileExist(encodePath)) {
             return "";
+        }
 
-        String outPath = encodeFile.replaceAll(FileUtils.ENCODE_FILE_NAME,FileUtils.SPLITED_FILE_NAME);
+        String splitPath = encodePath.replaceAll(FileUtils.ENCODE_FILE_NAME,FileUtils.SPLITED_FILE_NAME);
 
         BufferedReader br;
         BufferedWriter bw;
         try{
-            br = new BufferedReader(new FileReader(new File(encodeFile)));
-            bw = new BufferedWriter(new FileWriter(new File(outPath)));
+            br = new BufferedReader(new FileReader(new File(encodePath)));
+            bw = new BufferedWriter(new FileWriter(new File(splitPath)));
             String line ;
             StringBuilder sb;
             while ((line=br.readLine())!=null){
@@ -32,7 +32,7 @@ public class CommSplitter {
                     }
                 }
                 sb.append("\n");
-                bw.write(sb.toString());
+                bw.write(sb.toString().replaceAll("\n\n","\n"));
             }
             br.close();
             bw.close();
@@ -40,7 +40,7 @@ public class CommSplitter {
             e.printStackTrace();
         }
 
-        return outPath;
+        return splitPath;
     }
 
 }

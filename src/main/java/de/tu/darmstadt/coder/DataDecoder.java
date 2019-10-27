@@ -21,7 +21,11 @@ public class DataDecoder {
                 String[] s = sc.split(" ");
                 StringBuilder sb = new StringBuilder();
                 for (int i = 0; i < s.length; i++) {
-                    sb.append(commMap.get(Integer.valueOf(s[i]))+" ");
+                    if (commMap.containsKey(Integer.valueOf(s[i]))){
+                        sb.append(commMap.get(Integer.valueOf(s[i]))+" ");
+                    }else{
+                        sb.append("null ");
+                    }
                 }
                 sb.append("\n");
                 bw.write(sb.toString());

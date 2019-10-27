@@ -1,6 +1,6 @@
 package de.tu.darmstadt.analyser;
 
-import de.tu.darmstadt.domain.TrieTree;
+import de.tu.darmstadt.model.TrieTree;
 import de.tu.darmstadt.utils.FileUtils;
 
 import java.io.*;
@@ -9,7 +9,7 @@ public class TrieAnalyser {
 
     //基于clean splitter的结果构建trie
     public static TrieTree buildTree(String cleanPath){
-        if (!FileUtils.checkIsFile(cleanPath)) {
+        if (!FileUtils.checkFileExist(cleanPath)) {
             return null;
         }
         TrieTree trieTree = new TrieTree();
@@ -18,7 +18,8 @@ public class TrieAnalyser {
         try{
             br  = new BufferedReader(new FileReader(cleanPath));
             while ((line = br.readLine())!=null){
-                trieTree.insert(line);
+                if (!line.isEmpty())
+                    trieTree.insert(line);
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -28,7 +29,7 @@ public class TrieAnalyser {
 
     //基于构建的trie来识别dirty中出现的sensitive sc序列
     public static String searchTree(TrieTree trieTree, String dirtyPath){
-        if (!FileUtils.checkIsFile(dirtyPath)) {
+        if (!FileUtils.checkFileExist(dirtyPath)) {
             return "";
         }
         String outPath = dirtyPath.replaceAll(FileUtils.SPLITED_FILE_NAME,FileUtils.DIFFER_FILE_NAME);
@@ -37,12 +38,13 @@ public class TrieAnalyser {
         try{
             br = new BufferedReader(new FileReader(dirtyPath));
             bw = new BufferedWriter(new FileWriter(new File(outPath)));
-            String line;
-            while ((line = br.readLine())!=null){
+            String line = br.readLine();
+            while (line!=null && !line.isEmpty()){
                 boolean found = trieTree.search(line);
                 if (!found){
                     bw.write(line+"\n");
                 }
+                line = br.readLine();
             }
             br.close();
             bw.close();

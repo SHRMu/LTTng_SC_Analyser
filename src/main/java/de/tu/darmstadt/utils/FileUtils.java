@@ -1,8 +1,5 @@
 package de.tu.darmstadt.utils;
 
-import org.junit.Test;
-
-import javax.imageio.IIOException;
 import java.io.*;
 
 /**
@@ -12,7 +9,6 @@ public class FileUtils {
 
     public static final String CLEAN_FOLDER_NAME = "clean";
     public static final String DIRTY_FOLDER_NAME = "dirty";
-
 
     public static final String LTTNG_FILE_NAME = "lttng-k.txt";
     public static final String LTTNG_MAP_NAME = "lttng-map.txt";
@@ -39,13 +35,13 @@ public class FileUtils {
         }
     }
 
-    public static boolean checkIsFile(String filePath){
+    public static boolean checkFileExist(String filePath){
         File file = new File(filePath);
         if (file.exists() && file.isFile()) return true;
         return false;
     }
 
-    public static boolean checkIsFolder(String folderPath){
+    public static boolean checkFolderExist(String folderPath){
         File folder = new File(folderPath);
         if (folder.exists() && folder.isDirectory()) return true;
         return false;

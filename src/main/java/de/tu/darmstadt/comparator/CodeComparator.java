@@ -1,4 +1,4 @@
-package de.tu.darmstadt.coder;
+package de.tu.darmstadt.comparator;
 
 import org.junit.Test;
 

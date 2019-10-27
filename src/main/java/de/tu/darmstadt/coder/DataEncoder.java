@@ -1,16 +1,31 @@
 package de.tu.darmstadt.coder;
 
+import de.tu.darmstadt.mapper.Mapper;
 import de.tu.darmstadt.utils.FileUtils;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class DataEncoder {
 
-    public static String encoding(Map<String,Integer> commMap, String folderPath, int selectedCount, boolean removeRepeat){
+    //选择的data数
+    private int selectedCount;
+    //是否移除连续重复的sc
+    private boolean removeRepeat;
+
+    public DataEncoder(int selectedCount, boolean removeRepeat) {
+        this.selectedCount = selectedCount;
+        this.removeRepeat = removeRepeat;
+    }
+
+    public String encoding(Map<String,Integer> commMap, String folderPath){
 
         //如果输入的不是clean或者dirty文件夹，直接返回
-        if (!FileUtils.checkIsFolder(folderPath)){
+        if (!FileUtils.checkFolderExist(folderPath)) {
             return "";
         }
 
@@ -19,13 +34,14 @@ public class DataEncoder {
 
         //输出文件在clean或者dirty文件夹下直接产生
         String encodePath = folder.getAbsolutePath()+"\\"+ FileUtils.ENCODE_FILE_NAME;
+        FileUtils.cleanFile(encodePath);
 
         BufferedReader br = null;
         BufferedWriter bw = null;
 
         File[] files = folder.listFiles();
 
-        for (int i=0; i<selectedCount; i++){
+        for (int i=0; i<this.selectedCount; i++){
             try {
                 br = new BufferedReader(new FileReader(files[i]));
                 //追加写文件操作
@@ -51,7 +67,7 @@ public class DataEncoder {
                         }
                     }
                     commID = commMap.get(comm);
-                    if (removeRepeat){
+                    if (this.removeRepeat){
                         if (preCommID != commID){
                             sb.append(commID+" ");
                             preCommID = commID;
@@ -77,7 +93,90 @@ public class DataEncoder {
         }catch (IOException e){
             e.printStackTrace();
         }
+        if (name.equalsIgnoreCase("clean"))
+            Mapper.saveMapper(commMap,folder.getParent());
         return encodePath; //返回写入文件的地址
+    }
+
+    // 只针对制定的comm应用进行编码
+    public String encodingSchedSwitch(Map<String,Integer> commMap, String folderPath, String param){
+
+        //如果输入的不是clean或者dirty文件夹，直接返回
+        if (!FileUtils.checkFolderExist(folderPath)) {
+            return null;
+        }
+
+        File folder = new File(folderPath);
+        String name = folder.getName();
+
+        //输出文件在clean或者dirty文件夹下直接产生
+        String encodePath = folder.getAbsolutePath()+"\\"+ FileUtils.ENCODE_FILE_NAME;
+        FileUtils.cleanFile(encodePath);
+
+        BufferedReader br = null;
+        File[] files = folder.listFiles();
+        List<String> list = new ArrayList<>();
+        boolean flag = false;
+        int preCommID = 0;
+        for (File f:
+                files) {
+            try{
+                br = new BufferedReader(new FileReader(f));
+                String line;
+                String commName;
+                StringBuilder sb = new StringBuilder();
+                while ((line=br.readLine())!=null){
+                    String[] split = line.split(": ")[0].split(" ");
+                    commName = split[split.length-1];
+                    if (commName.equalsIgnoreCase("sched_switch")){
+                        String[] split1 = line.split("}, ");
+                        String s = split1[split1.length-1];
+                        Pattern p = Pattern.compile("\\{(.*?)\\}");
+                        Matcher m = p.matcher(s);
+                        while (m.find()){
+                            String[] params = m.group(1).split(",");
+                            for (int i = 0; i < params.length; i++) {
+                                String[] items = params[i].split("=");
+                                if (items[0].trim().equalsIgnoreCase("next_comm")&&items[1].trim().equalsIgnoreCase(param)){
+                                    flag = true;
+                                    break;
+                                }
+                                flag = false;
+                            }
+                        }
+                    }
+                    if (flag){
+                        int commID = commMap.containsKey(commName)? commMap.get(commName):-1;
+                        if (removeRepeat ){
+                            if (preCommID != commID){
+                                sb.append(commID+" ");
+                                preCommID = commID;
+                            }
+                        }else {
+                            sb.append(commID+" ");
+                        }
+                    }
+                }
+                list.add(sb.toString());
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+        }
+        try {
+            br.close();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        try {
+            BufferedWriter bw = new BufferedWriter(new FileWriter(new File(encodePath)));
+            for (int i = 0; i < list.size(); i++) {
+                bw.write(list.get(i)+"\n");
+            }
+            bw.close();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        return encodePath;
     }
 
 }

@@ -1,4 +1,4 @@
-package de.tu.darmstadt.domain;
+package de.tu.darmstadt.model;
 
 import java.util.HashMap;
 import java.util.Map;
