@@ -18,9 +18,9 @@ public class Main {
     public static void main(String[] args){
 
         //records主目录，包括clean,dirty两个记录文件夹
-        String folder = "D:\\Vulnerability\\CVE-2017-7494-G";
+        String folder = "D:\\Vulnerability\\CVE-2017-7494";
         //验证数据的数量
-        int selectedCount = 150;
+        int selectedCount = 95;
 
         //phase 1: 建立commMap，用于将sc名称映射为数字
         Map<String, Integer> commMap = new HashMap<>();
@@ -56,7 +56,7 @@ public class Main {
         //加载保存的commMap, 用于数字到sc名称的反向映射
         Map<Integer, String> reverseMap = Mapper.loadReverseMapper(folder);
         //phase 5: 提取出现至少95%以上的重复案例
-        List<String> list = Filter.filterByCount(differ,(int)(selectedCount * 1.1f),(int)(selectedCount*0.9f));
+        List<String> list = Filter.filterByCount(differ,(int)(selectedCount * 1.05f),(int)(selectedCount*0.95f));
         list.forEach(item-> System.out.println(item));
         DataDecoder.decoding(reverseMap, list, folder);
 
