@@ -1,7 +1,9 @@
 package de.tu.darmstadt.mapper;
 
+
 import de.tu.darmstadt.utils.FileUtils;
 import de.tu.darmstadt.utils.MapUtils;
+import org.junit.Test;
 
 import java.io.*;
 import java.util.HashMap;
@@ -9,23 +11,24 @@ import java.util.Map;
 
 public class Mapper {
     /**
-     *
-     * @param folderPath records folder的路径
+     * 默认读取 records folder 路径下的lttng-k.txt文件，返回commMap映射
+     * @param folderPath records folder path
      * @return lttng command 对应的Integer数值
      */
     public static Map<String, Integer> createMapper(String folderPath){
-        Map<String, Integer> commMap = new HashMap<>();
         //读取resource文件夹下的lttng-k.txt
         String lttngPath = folderPath + "\\" + FileUtils.LTTNG_FILE_NAME;
         if (!FileUtils.checkFileExist(lttngPath)) {
             return null;
         }
-        int count = 1;
+        Map<String, Integer> commMap = new HashMap<>();
+        BufferedReader br;
         try {
-            BufferedReader br = new BufferedReader(new FileReader(new File(lttngPath)));
+            br = new BufferedReader(new FileReader(new File(lttngPath)));
             String line;
+            int count = 1;
             while ((line = br.readLine())!=null){
-                String comm = line.split(" ")[0]; //get sc name
+                String comm = line.split(" ")[0]; //sc name as map key
                 if (!commMap.keySet().contains(comm)){
                     commMap.put(comm,count);
                     count++;
@@ -39,7 +42,7 @@ public class Mapper {
     }
 
     /**
-     * 将clean数据中出现过的sc name map保存到本地
+     * 将commMap保存到本地
      * @param commMap
      * @param folderPath
      */
@@ -47,12 +50,14 @@ public class Mapper {
         if (!FileUtils.checkFolderExist(folderPath)) {
             return;
         }
-        String lttngMapPath = folderPath +"\\"+ FileUtils.LTTNG_MAP_NAME;
-        StringBuilder sb = new StringBuilder();
+        String mapPath = folderPath +"\\"+ FileUtils.LTTNG_MAP_NAME;
+        BufferedWriter bw;
+        StringBuilder sb;
         try {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(new File(lttngMapPath)));
-            Map<String, Integer> map = MapUtils.sortByValue(commMap);
-            map.entrySet().forEach(entity -> sb.append(entity.getKey()+" "+entity.getValue()+"\n"));
+            bw = new BufferedWriter(new FileWriter(new File(mapPath)));
+            sb = new StringBuilder();
+            commMap = MapUtils.sortByValue(commMap); // 升序排列
+            commMap.entrySet().forEach(entity -> sb.append(entity.getKey()+" "+entity.getValue()+"\n"));
             bw.write(sb.toString());
             bw.close();
         }catch (IOException e){
@@ -60,16 +65,20 @@ public class Mapper {
         }
     }
 
-    //
+    /**
+     * 加载已经保存的lttng-map.txt文件
+     * @param folderPath records folder path
+     * @return commMap
+     */
     public static Map<String, Integer> loadMapper(String folderPath){
-        String filePath = folderPath + "\\" + FileUtils.LTTNG_MAP_NAME;
-        if (!FileUtils.checkFileExist(filePath)) {
+        String mapPath = folderPath + "\\" + FileUtils.LTTNG_MAP_NAME;
+        if (!FileUtils.checkFileExist(mapPath)) {
             return null;
         }
-        Map<String, Integer> commMap = new HashMap<>();
         BufferedReader  br;
+        Map<String, Integer> commMap = new HashMap<>();
         try{
-            br = new BufferedReader(new FileReader(new File(filePath)));
+            br = new BufferedReader(new FileReader(new File(mapPath)));
             String line;
             while ((line=br.readLine())!=null){
                 String[] comm = line.split(" ");
@@ -102,5 +111,11 @@ public class Mapper {
             e.printStackTrace();
         }
         return commMap;
+    }
+
+    @Test
+    public void test(){
+        Map<String, Integer> map = loadMapper("D:\\Vulnerability\\CVE-2017-7494");
+        map.entrySet().forEach(entity-> System.out.println(entity.getKey()+" "+entity.getValue()));
     }
 }

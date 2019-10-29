@@ -34,7 +34,6 @@ public class DataEncoder {
 
         //输出文件在clean或者dirty文件夹下直接产生
         String encodePath = folder.getAbsolutePath()+"\\"+ FileUtils.ENCODE_FILE_NAME;
-        FileUtils.cleanFile(encodePath);
 
         BufferedReader br = null;
         BufferedWriter bw = null;
@@ -111,7 +110,6 @@ public class DataEncoder {
 
         //输出文件在clean或者dirty文件夹下直接产生
         String encodePath = folder.getAbsolutePath()+"\\"+ FileUtils.ENCODE_FILE_NAME;
-        FileUtils.cleanFile(encodePath);
 
         BufferedReader br = null;
         File[] files = folder.listFiles();

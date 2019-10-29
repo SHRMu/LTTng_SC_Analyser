@@ -12,7 +12,6 @@ import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.junit.Test;
 
-import javax.swing.*;
 import java.awt.*;
 import java.io.*;
 import java.util.HashMap;
@@ -20,7 +19,7 @@ import java.util.Map;
 
 public class BarGraph {
 
-    public static void setChartDate(String path, String titleName, String aTitleName, String uTitleName,CategoryDataset ds,  int width,int height) throws IOException {
+    public static void createBarGraph(String path, String titleName, String aTitleName, String uTitleName,CategoryDataset ds,  int width,int height) throws IOException {
 //	        CategoryDataset ds = getDataSet();
 //	        JFreeChart chart = ChartFactory.createBarChart3D(
         JFreeChart chart = ChartFactory.createBarChart(
@@ -163,7 +162,7 @@ public class BarGraph {
 
     public static void main(String[] args) {
         try {
-            BarGraph.setChartDate("D:\\Vulnerability\\CVE-2017-7494\\result\\demo.png", "sc落点位置柱状图", "pos", "nums",BarGraph.getDataList("D:\\Vulnerability\\CVE-2017-7494\\result\\demo.txt"),1000,500);
+            BarGraph.createBarGraph("D:\\Vulnerability\\CVE-2017-7494\\result\\10.png", "sc落点位置柱状图", "pos", "nums",BarGraph.getDataList("D:\\Vulnerability\\CVE-2017-7494\\result\\10.txt"),1000,500);
         } catch (IOException e) {
             e.printStackTrace();
         }

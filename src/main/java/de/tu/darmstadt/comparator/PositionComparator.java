@@ -9,6 +9,10 @@ import java.util.List;
 
 public class PositionComparator {
 
+    public static String getPosition(List<String> sensCodes, String dirtyEncodePath){
+        return null;
+    }
+
     public static List<Float> getPosition(String sensCode, String dirtyEncode){
         if (!FileUtils.checkFileExist(dirtyEncode)) {
             return null;
@@ -34,7 +38,7 @@ public class PositionComparator {
     @Test
     public void test(){
         try {
-            BufferedReader br = new BufferedReader(new FileReader(new File("D:\\Vulnerability\\CVE-2017-7494\\result\\sensCode_smbd.txt")));
+            BufferedReader br = new BufferedReader(new FileReader(new File("D:\\Vulnerability\\CVE-2017-7494\\result\\10.txt")));
             String line;
             while ((line = br.readLine())!=null){
                 List<Float> position = getPosition(line, "D:\\Vulnerability\\CVE-2017-7494\\dirty\\encode.txt");

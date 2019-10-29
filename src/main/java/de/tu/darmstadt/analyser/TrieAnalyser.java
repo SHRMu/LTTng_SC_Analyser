@@ -7,8 +7,15 @@ import java.io.*;
 
 public class TrieAnalyser {
 
+    public static String run(String cleanSplitPath, String dirtySplitPath){
+        TrieAnalyser trieAnalyser = new TrieAnalyser();
+        TrieTree trieTree = trieAnalyser.buildTree(cleanSplitPath);
+        String differPath = trieAnalyser.searchTree(trieTree, dirtySplitPath);
+        return differPath;
+    }
+
     //基于clean splitter的结果构建trie
-    public static TrieTree buildTree(String cleanPath){
+    private TrieTree buildTree(String cleanPath){
         if (!FileUtils.checkFileExist(cleanPath)) {
             return null;
         }
@@ -28,7 +35,7 @@ public class TrieAnalyser {
     }
 
     //基于构建的trie来识别dirty中出现的sensitive sc序列
-    public static String searchTree(TrieTree trieTree, String dirtyPath){
+    private String searchTree(TrieTree trieTree, String dirtyPath){
         if (!FileUtils.checkFileExist(dirtyPath)) {
             return "";
         }

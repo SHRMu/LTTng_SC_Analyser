@@ -16,7 +16,6 @@ public class Filter {
         if (!FileUtils.checkFileExist(differPath)) {
             return null;
         }
-
         Map<String,Integer> countMap = new HashMap<>();
         List<String> result = new ArrayList<>();
         BufferedReader br;
@@ -45,6 +44,24 @@ public class Filter {
                 break;
             if (countMap.get(s)<max)
                 result.add(s);
+        }
+
+        String resultFolder = "D:\\Vulnerability\\CVE-2017-7494-G\\result";
+        BufferedWriter bw =null;
+        for (int i = 0; i < result.size(); i++) {
+            String outPath = resultFolder +"\\"+ String.valueOf(i)+".txt";
+            try {
+                bw = new BufferedWriter(new FileWriter(new File(outPath)));
+                bw.write(result.get(i));
+                bw.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        try {
+            bw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         return result;

@@ -27,8 +27,8 @@ public class CodeComparator {
            }
            br = new BufferedReader(new FileReader(new File(decodePath2)));
            while ((line=br.readLine()) !=null){
-               if (set.contains(line.trim()));
-               System.out.println(line);
+               if (set.contains(line.trim()))
+                   System.out.println(line);
            }
         }catch (IOException e){
             e.printStackTrace();
@@ -37,7 +37,7 @@ public class CodeComparator {
 
     @Test
     public void test(){
-        twoComparator("D:\\Vulnerability\\CVE-2017-7494-G\\result\\decode_160.txt","D:\\Vulnerability\\CVE-2017-7494\\decode.txt");
+        twoComparator("D:\\Vulnerability\\CVE-2017-7494\\decode.txt","D:\\Vulnerability\\CVE-2017-7494-G\\decode.txt");
     }
 
 }
