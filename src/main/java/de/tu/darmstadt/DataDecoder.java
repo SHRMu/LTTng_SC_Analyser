@@ -1,4 +1,4 @@
-package de.tu.darmstadt.coder;
+package de.tu.darmstadt;
 
 import de.tu.darmstadt.utils.FileUtils;
 
