@@ -4,60 +4,61 @@ import de.tu.darmstadt.model.TrieTree;
 import de.tu.darmstadt.utils.FileUtils;
 
 import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TrieAnalyser {
 
-    public static String run(String cleanSplitPath, String dirtySplitPath){
+    public static Map<String,Integer> run(String cleanSplitPath, String dirtySplitPath){
         TrieAnalyser trieAnalyser = new TrieAnalyser();
         TrieTree trieTree = trieAnalyser.buildTree(cleanSplitPath);
-        String differPath = trieAnalyser.searchTree(trieTree, dirtySplitPath);
-        return differPath;
+        Map<String,Integer> countMap = trieAnalyser.searchTree(trieTree, dirtySplitPath);
+        return countMap;
     }
 
-    //基于clean splitter的结果构建trie
+    //基于clean split的结果构建trieTree
     private TrieTree buildTree(String cleanPath){
         if (!FileUtils.checkFileExist(cleanPath)) {
             return null;
         }
         TrieTree trieTree = new TrieTree();
-        BufferedReader br;
-        String line;
-        try{
-            br  = new BufferedReader(new FileReader(cleanPath));
+        try (BufferedReader br = new BufferedReader(new FileReader(new File(cleanPath)))){
+            String line;
             while ((line = br.readLine())!=null){
-                if (!line.isEmpty())
-                    trieTree.insert(line);
+                trieTree.insert(line);
             }
-        }catch (Exception e){
+        }catch (IOException e){
             e.printStackTrace();
         }
         return trieTree;
     }
 
-    //基于构建的trie来识别dirty中出现的sensitive sc序列
-    private String searchTree(TrieTree trieTree, String dirtyPath){
+    //基于构建的clean trie来识别dirty中出现的sensitive sc序列
+    private Map<String, Integer> searchTree(TrieTree trieTree, String dirtyPath){
         if (!FileUtils.checkFileExist(dirtyPath)) {
-            return "";
+            return null;
         }
-        String outPath = dirtyPath.replaceAll(FileUtils.SPLITED_FILE_NAME,FileUtils.DIFFER_FILE_NAME);
-        BufferedReader br;
-        BufferedWriter bw;
-        try{
-            br = new BufferedReader(new FileReader(dirtyPath));
-            bw = new BufferedWriter(new FileWriter(new File(outPath)));
-            String line = br.readLine();
-            while (line!=null && !line.isEmpty()){
+
+        Map<String, Integer> countMap = null;
+
+        try(BufferedReader br = new BufferedReader(new FileReader(new File(dirtyPath)))){
+            countMap = new HashMap<>();
+            String line;
+            while ((line = br.readLine()) != null ){
                 boolean found = trieTree.search(line);
-                if (!found){
-                    bw.write(line+"\n");
+                if (!found){ //统计只在dirty split中出现的序列
+                    if (!countMap.containsKey(line)){
+                        countMap.put(line,1);
+                    }else {
+                        int temp = countMap.get(line);
+                        countMap.replace(line,temp,temp+1);
+                    }
                 }
-                line = br.readLine();
             }
-            br.close();
-            bw.close();
         }catch (IOException e){
             e.printStackTrace();
         }
-        return outPath;
+
+        return countMap;
     }
 }

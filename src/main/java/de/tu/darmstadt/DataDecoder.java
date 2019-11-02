@@ -11,31 +11,27 @@ import java.util.Map;
 
 public class DataDecoder {
 
-    public static String decoding(Map<Integer, String> commMap, List<String> scList, String folderPath){
+    public static void decoding(String folderPath, List<String> scList, Map<Integer, String> commMap){
 
-        String outPath = folderPath +"\\" + FileUtils.DECODE_FILE_NAME;
-        try{
-            BufferedWriter bw = new BufferedWriter(new FileWriter(new File(outPath)));
-            for (String sc:
-                    scList) {
-                String[] s = sc.split(" ");
-                StringBuilder sb = new StringBuilder();
-                for (int i = 0; i < s.length; i++) {
-                    if (commMap.containsKey(Integer.valueOf(s[i]))){
-                        sb.append(commMap.get(Integer.valueOf(s[i]))+" ");
+        String outPath = folderPath + "\\" + FileUtils.DECODE_FILE_NAME;
+        try( BufferedWriter bw = new BufferedWriter(new FileWriter(new File(outPath)))){
+            StringBuilder sb = new StringBuilder();
+            scList.forEach(sc->{
+                String[] ids = sc.split(" ");
+                for (int i = 0; i < ids.length; i++) {
+                    if (commMap.containsKey(Integer.valueOf(ids[i]))){
+                        sb.append(commMap.get(Integer.valueOf(ids[i]))+" ");
                     }else{
                         sb.append("null ");
                     }
                 }
                 sb.append("\n");
-                bw.write(sb.toString());
-            }
-            bw.close();
+            });
+            bw.write(sb.toString());
+            bw.flush();
         }catch (IOException e){
-
+            e.printStackTrace();
         }
-
-        return outPath;
 
     }
 

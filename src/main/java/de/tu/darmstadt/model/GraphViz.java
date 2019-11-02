@@ -8,9 +8,24 @@ public class GraphViz {
     private String runPath = "";
     private String dotPath = "";
     private String runOrder="";
-    private String dotCodeFile="dotcode.txt";
-    private String resultGif="dotGif";
+    private String dotCodeFile="";
+    private String resultGif="";
     private StringBuilder graph = new StringBuilder();
+
+    public GraphViz(String runPath, String dotPath) {
+        this.runPath = runPath;
+        this.dotPath = dotPath;
+//        this.dotCodeFile = dotCodeFile;
+//        this.resultGif = resultGif;
+    }
+
+    public void setDotCodeFile(String dotCodeFile) {
+        this.dotCodeFile = dotCodeFile;
+    }
+
+    public void setResultGif(String resultGif) {
+        this.resultGif = resultGif;
+    }
 
     Runtime runtime=Runtime.getRuntime();
 
@@ -51,10 +66,6 @@ public class GraphViz {
         }
     }
 
-    public GraphViz(String runPath,String dotPath) {
-        this.runPath=runPath;
-        this.dotPath=dotPath;
-    }
 
     public void add(String line) {
         graph.append("\t"+line);

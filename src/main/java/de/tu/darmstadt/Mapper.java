@@ -7,8 +7,10 @@ import de.tu.darmstadt.utils.ParamsUtils;
 import org.junit.Test;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 /**
  * @author huanyingcool
@@ -26,7 +28,7 @@ public class Mapper {
      * 遍历records folder下的clean文件，建立commMap映射，保存到folder下的lttng-map.txt
      * 改进：只保存sc name:int编号 没有太大意义，考虑后期的统计，改为保存sc name:count计数值
      */
-    public void initMapper(){
+    public void run(){
 
         //调用clean folder下的records为commMap的基准
         String cleanFolder = FileUtils.getCleanFolder(folderPath);
@@ -34,38 +36,39 @@ public class Mapper {
             return ;
         }
 
-        Map<String,Integer> commMap = createMap(cleanFolder);
-        saveMap(commMap);
+        buildMap(cleanFolder);
+
     }
 
     /**
-     * 遍历cleanFolder下的所有records,尽力commMap
+     * 遍历cleanFolder下的所有records,建立commMap，同时保存
      * @param cleanFolder clean folder path
-     * @return commMap<SC name, Count>
      */
-    private Map<String,Integer> createMap(String cleanFolder){
+    private void buildMap(String cleanFolder){
+        Map<String,Integer> commMap = new HashMap<>();
 
         File folder = new File(cleanFolder);
-        File[] files = folder.listFiles();
-        Map<String,Integer> commMap = new HashMap<>();
-        for (File f:
-                files) {
+        File[] files = folder.listFiles((d,s)-> Character.isDigit(s.charAt(0)));
+
+        Arrays.stream(files).forEach(file -> {
             String line = null;
-            try (BufferedReader br = new BufferedReader(new FileReader(f))){
+            try (BufferedReader br = new BufferedReader(new FileReader(file))){
                 while ((line = br.readLine())!=null){
                     String scName = ParamsUtils.getScName(line);
                     if (commMap.containsKey(scName)){
-                        commMap.replace(scName, commMap.get(scName), commMap.get(scName) + 1);
+                        int temp = commMap.get(scName);
+                        commMap.replace(scName, temp, temp + 1);
                     }else {
                         commMap.put(scName, 1);
                     }
                 }
             }catch (IOException e){
-                System.out.println(f.getName()+" with error exceptine line : " + line);
+                System.out.println(file.getName()+" has exceptine line : " + line);
             }
-        }
+        });
 
-        return commMap;
+        //保存
+        saveMap(commMap);
 
     }
 
@@ -75,7 +78,7 @@ public class Mapper {
      */
     private void saveMap(Map<String, Integer> commMap){
         String outPath = folderPath + "\\"+ "lttng-map.txt";
-        commMap = MapUtils.sortByValue(commMap, true);
+        commMap = MapUtils.sortByValue(commMap, true); //abscending
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(new File(outPath)))){
             commMap.entrySet().forEach(entry -> {
                 try {
@@ -93,7 +96,7 @@ public class Mapper {
      * 加载records folder path下的lttng-map.txt文件
      * @return commMap<SC name: Integer>
      */
-    public Map<String,Integer> loadMap(){
+    public Map<String,Integer> loadMap(String folderPath){
         String mapPath = folderPath + "\\" + FileUtils.LTTNG_MAP_NAME;
         if (!FileUtils.checkFileExist(mapPath)) {
             return null;
